@@ -5,6 +5,14 @@
 #include <grpcpp/grpcpp.h>
 #include "example.grpc.pb.h" // Generated from example.proto
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <cstdlib>
+#include <unistd.h>
+#endif
+
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
@@ -45,13 +53,21 @@ private:
     std::unique_ptr<ExampleService::Stub> stub_;
 };
 std::string GetTempPathFromEnv() {
+#if defined(WIN32)
     char tempPath[MAX_PATH];
     DWORD length = GetEnvironmentVariable(TEXT("TEMP"), tempPath, MAX_PATH);
     if (length == 0 || length > MAX_PATH) {
         throw std::runtime_error("Failed to get TEMP environment variable");
     }
     return std::string(tempPath);
-  }
+#else
+    const char* tempPath = std::getenv("TMPDIR");
+    if (!tempPath) {
+        tempPath = "/tmp"; // Default to /tmp if TMPDIR is not set
+    }
+    return std::string(tempPath);
+#endif
+}
 
 int main(int argc, char** argv) {
     // Create a channel to connect to the server

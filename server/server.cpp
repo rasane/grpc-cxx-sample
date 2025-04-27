@@ -1,10 +1,5 @@
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <cstdlib>
-#include <unistd.h>
-#endif
+
 
 #include <iostream>
 #include <memory>
@@ -21,6 +16,13 @@ using example::HelloRequest;
 using example::HelloReply;
 
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <cstdlib>
+#include <unistd.h>
+#endif
+
 
 class ExampleServiceImpl final : public ExampleService::Service {
   Status SayHello(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
@@ -33,7 +35,7 @@ class ExampleServiceImpl final : public ExampleService::Service {
 };
 
 std::string GetTempPathFromEnv() {
-#ifdef _WIN32
+#if defined(WIN32)
     char tempPath[MAX_PATH];
     DWORD length = GetEnvironmentVariable(TEXT("TEMP"), tempPath, MAX_PATH);
     if (length == 0 || length > MAX_PATH) {
