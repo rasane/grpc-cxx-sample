@@ -33,7 +33,7 @@ jobs:
     # Package server and client into a zip file
     - name: Package Artifacts
       run: |
-        mkdir -p release
+        mkdir -p release/server release/client
         cp -r build/server/* release/server/
         cp -r build/client/* release/client/
         cd release
